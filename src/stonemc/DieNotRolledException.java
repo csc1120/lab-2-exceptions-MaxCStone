@@ -10,8 +10,8 @@ package stonemc;
 /**
  * This class extends RuntimeException to throw an exception when called.
  */
-public class DieNotRolledException extends RuntimeException {
+public class DieNotRolledException extends Exception {
     public DieNotRolledException() {
-        super();
+        super("The dice's value was retrieved before it was rolled.");
     }
 }

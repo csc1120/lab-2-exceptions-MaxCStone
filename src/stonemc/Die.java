@@ -18,7 +18,7 @@ public class Die {
     public Die(int sides) throws IllegalArgumentException{
         this.sides = sides;
         if(100 < sides || sides < 2) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Die was constructed with an invalid number of sides");
         }
     }
 
@@ -40,6 +40,6 @@ public class Die {
      * This method generates a random value to set currentValue to
      */
     public void roll() {
-        currentValue = (int)(Math.random() * (sides-1) + 1);
+        currentValue = (int)(Math.random() * (sides) + 1);
     }
 }

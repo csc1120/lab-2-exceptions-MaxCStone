@@ -19,10 +19,20 @@ import java.util.regex.Pattern;
  */
 public class Driver {
     public static void main(String[] args) {
+        int[] userInputs;
+        Die[] dieArray;
+        int[] rollResults;
+        int maximumValue;
+
         System.out.println("Please enter the number of dice to roll, how many sides the dice have,"+ 
             "\nand how many rolls to complete, separating the values by a space."+ 
             "\nExample: \"2 6 1000\"\n");
-        getInput();
+        
+        userInputs = getInput();
+        // dieArray = createDice(userInputs[0],userInputs[1]);
+        // rollResults = rollDice(dieArray, userInputs[2]);
+        // maximumValue = findMax(rollResults);
+        // report(maximumValue, rollResults);
     }
 
     /**
@@ -44,7 +54,7 @@ public class Driver {
                 while(matcher.find()) {
                     inputList.add(Integer.valueOf(matcher.group()));
                 }
-                if(2 < inputList.get(1) || inputList.get(1) > 100) {
+                if(2 > inputList.get(1) || inputList.get(1) > 100) {
                     System.out.println("Bad die creation: Illegal number of sides:" + 
                     inputList.get(1));
                 } else {
@@ -72,11 +82,63 @@ public class Driver {
         }
 
 
-    // static Die[] createDice(int numbers, int sides) {}
+    /**
+     * This method creates an array of dice based on the user's parameters
+     * @param number is the number of dice created
+     * @param sides is the number of sides each die has
+     * @return this returns the dieArray
+     */
+    static Die[] createDice(int number, int sides) {
+        Die[] dieArray = new Die[number];
+        for(int i = 0; i < number; i++) {
+            dieArray[i] = new Die(sides);
+        }
+        return dieArray;
+    }
 
-    // static int[] rollDice(Die[] dies) {}
+    /**
+     * This method rolls the dice the number of times that the user specified
+     * @param dice is the array of dice to be rolled
+     * @param numberOfRolls is the number of times each die is rolled
+     * @return this method returns an array of results of the dice
+     */
+    static int[] rollDice(Die[] dice, int numberOfRolls) {
+        int[] results = new int[numberOfRolls];
+        for(int i = 0; i < results.length; i++) {
+            for (int j = 0; j < dice.length; i++) {
+                
+            }
+        }
+        return results;
+    }
 
-    // static int findMax(int[] results) {}
+    /**
+     * This method finds the maximum within the array of results
+     * @param results is the array that is searched
+     * @return the integer value of the maximum result
+     */
+    static int findMax(int[] results) {
+        int maximum = 0;
+        for(int i : results) {
+            if(maximum < i) {
+                maximum = i;
+            }
+        }
+        return maximum;
+    }
 
-    // static void report() {}
+    /**
+     * This formats then displays the frequencies of each rolled result
+     * @param maximumValue is the maximum value rolled throughout the trial
+     * @param rollResults is array of results from the trial
+     */
+    static void report(int maximumValue, int[] rollResults) {
+        int[] frequencies = new int[maximumValue];
+        for(int i : rollResults) {
+            frequencies[i]++;
+        }
+        for(int i = 0; i < frequencies.length; i++) {
+            System.out.println(i+ ": " + frequencies[i]);
+        }
+    }
 }
