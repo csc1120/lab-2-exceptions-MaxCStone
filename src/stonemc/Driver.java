@@ -32,7 +32,7 @@ public class Driver {
         dieArray = createDice(userInputs[0],userInputs[1]);
         rollResults = rollDice(dieArray, userInputs[2]);
         maximumValue = findMax(rollResults);
-        report(maximumValue, rollResults);
+        report(maximumValue,rollResults);
     }
 
     /**
