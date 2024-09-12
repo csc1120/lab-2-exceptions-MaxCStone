@@ -118,6 +118,41 @@ public class Driver {
     }
 
     /**
+     * This formats then displays the frequencies of each rolled result
+     * @param maximumValue is the maximum value rolled throughout the trial
+     * @param rollResults is array of results from the trial
+     */
+    static void report(int maximumValue, int[] rollResults) {
+        int[] frequencies = findRollFrequency(rollResults);
+        String lengthMax = ""+ (int)maximumValue/10;
+        String lengthStar = ""+ (int)findMax(frequencies)/10;
+        int scale = findMax(frequencies)/10;
+        for(int i = 0; i < frequencies.length; i++) {
+            if(frequencies[i] > 0) {
+                System.out.printf("%-" + (lengthMax.length() + 3) + "s", (i+1)+ ":");
+                System.out.printf("%-" + (lengthStar.length() + 3) + "s",frequencies[i]);
+                for(int j = 0; j < frequencies[i]/scale; j++) {
+                    System.out.print("*");
+                }
+                System.out.println("");
+            }
+        }
+    }
+
+    /**
+     * This method finds the frequency which a specific result occured
+     * @param rollResults this is the array of rolls that resulted
+     * @return the array of frequencies that rolls occured
+     */
+    static int[] findRollFrequency(int[] rollResults) {
+        int[] frequencies = new int[findMax(rollResults)];
+        for(int i : rollResults) {
+            frequencies[i-1]++;
+        }
+        return frequencies;
+    }
+    
+    /**
      * This method finds the maximum within the array of results
      * @param results is the array that is searched
      * @return the integer value of the maximum result
@@ -130,43 +165,5 @@ public class Driver {
             }
         }
         return maximum;
-    }
-
-    /**
-     * This formats then displays the frequencies of each rolled result
-     * @param maximumValue is the maximum value rolled throughout the trial
-     * @param rollResults is array of results from the trial
-     */
-    static void report(int maximumValue, int[] rollResults) {
-        int[] frequencies = new int[maximumValue];
-        for(int i : rollResults) {
-            frequencies[i-1]++;
-        }
-        String lengthMax = ""+ (int)maximumValue/10;
-        String lengthStar = ""+ (int)findMax(frequencies)/10;
-        int maxNumStar = 0;
-        for(int i = 0; i < frequencies.length; i++) {
-            if(frequencies[i] > 0) {
-                maxNumStar++;
-            }
-        }
-        int usedLoops = 0;
-        for(int i = 0; i < frequencies.length; i++) {
-            if(frequencies[i] > 0) {
-                System.out.printf("%-" + (lengthMax.length() + 3) + "s", (i+1)+ ":");
-                System.out.printf("%-" + (lengthStar.length() + 3) + "s",frequencies[i]);
-                int numStars;
-                if(usedLoops > (maxNumStar/2)) {
-                    numStars = Math.abs((maxNumStar) - (usedLoops));
-                } else {
-                    numStars = usedLoops;
-                }
-                for(int j = 0; j < numStars-1; j++) {
-                    System.out.print("*");
-                }
-                System.out.println("");
-                usedLoops++;
-            }
-        }
     }
 }
