@@ -29,10 +29,10 @@ public class Driver {
             "\nExample: \"2 6 1000\"\n");
         
         userInputs = getInput();
-        // dieArray = createDice(userInputs[0],userInputs[1]);
-        // rollResults = rollDice(dieArray, userInputs[2]);
-        // maximumValue = findMax(rollResults);
-        // report(maximumValue, rollResults);
+        dieArray = createDice(userInputs[0],userInputs[1]);
+        rollResults = rollDice(dieArray, userInputs[2]);
+        maximumValue = findMax(rollResults);
+        report(maximumValue, rollResults);
     }
 
     /**
@@ -55,14 +55,14 @@ public class Driver {
                     inputList.add(Integer.valueOf(matcher.group()));
                 }
                 if(2 > inputList.get(1) || inputList.get(1) > 100) {
-                    System.out.println("Bad die creation: Illegal number of sides:" + 
+                    System.out.println("Bad die creation: Illegal number of sides: " + 
                     inputList.get(1));
                 } else {
                     if(inputList.size() < 3) {
-                        System.out.println("Invalid input: Expected 3 values but recieved less" + 
+                        System.out.println("Invalid input: Expected 3 whole number values but recieved less" + 
                         "than 3");                    
                     } else if(inputList.size() > 3) {
-                        System.out.println("Invalid input: Expected 3 values but recieved" +
+                        System.out.println("Invalid input: Expected 3 whole number values but recieved " +
                         "greater than 3");
                     } else {
                         running = false;
@@ -105,8 +105,13 @@ public class Driver {
     static int[] rollDice(Die[] dice, int numberOfRolls) {
         int[] results = new int[numberOfRolls];
         for(int i = 0; i < results.length; i++) {
-            for (int j = 0; j < dice.length; i++) {
-                
+            for (int j = 0; j < dice.length; j++) {
+                dice[j].roll();
+                try {
+                    results[i] += dice[j].getCurrentValue();
+                } catch(DieNotRolledException e) {
+                    System.out.println("Die Not Rolled exception");
+                }
             }
         }
         return results;
@@ -135,10 +140,33 @@ public class Driver {
     static void report(int maximumValue, int[] rollResults) {
         int[] frequencies = new int[maximumValue];
         for(int i : rollResults) {
-            frequencies[i]++;
+            frequencies[i-1]++;
         }
+        String lengthMax = ""+ (int)maximumValue/10;
+        String lengthStar = ""+ (int)findMax(frequencies)/10;
+        int maxNumStar = 0;
         for(int i = 0; i < frequencies.length; i++) {
-            System.out.println(i+ ": " + frequencies[i]);
+            if(frequencies[i] > 0) {
+                maxNumStar++;
+            }
+        }
+        int usedLoops = 0;
+        for(int i = 0; i < frequencies.length; i++) {
+            if(frequencies[i] > 0) {
+                System.out.printf("%-" + (lengthMax.length() + 3) + "s", (i+1)+ ":");
+                System.out.printf("%-" + (lengthStar.length() + 3) + "s",frequencies[i]);
+                int numStars;
+                if(usedLoops > (maxNumStar/2)) {
+                    numStars = Math.abs((maxNumStar) - (usedLoops));
+                } else {
+                    numStars = usedLoops;
+                }
+                for(int j = 0; j < numStars-1; j++) {
+                    System.out.print("*");
+                }
+                System.out.println("");
+                usedLoops++;
+            }
         }
     }
 }
