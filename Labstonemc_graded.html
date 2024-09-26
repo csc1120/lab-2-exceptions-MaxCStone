@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Lab 2 Feedback - stonemc-graded</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        table, th, td { border: 1px solid #ccc; }
+        th, td { padding: 10px; text-align: left; }
+        .commendation { color: green; }
+        .deduction { color: red; }
+        .suggestion { color: blue; }
+        .code-block { background-color: #f9f9f9; border-left: 3px solid #ccc; padding: 10px; margin: 10px 0; }
+        pre { margin: 0; }
+        .grade { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Lab 2 - Exceptions</h1>
+    <table>
+        <tr>
+            <th>Earned</th>
+            <th>Possible</th>
+            <th>Criteria</th>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>15</td>
+            <td>Intermediate Commits</td>
+        </tr>
+        <tr>
+            <td>56</td>
+            <td>60</td>
+            <td>Technical Quality (see point deductions in code)</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>15</td>
+            <td>Coding Standard Compliance and Program Clarity</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td>10</td>
+            <td>Following Submission Instructions</td>
+        </tr>
+    </table>
+
+    <h2>Feedback</h2>
+    <p>Dear Max,</p>
+    <p>Thank you for your submission of Lab 2. Below, you'll find detailed feedback on your work. You've demonstrated a solid understanding of exception handling and input validation. However, there are a few areas where improvements can enhance the robustness and clarity of your code.</p>
+
+    <h2>Detailed Feedback</h2>
+
+    <h3>Die.java</h3>
+    <div class="code-block">
+        <pre>
+    /*
+     * Course: CSC1020
+     * Lab 2 - Exceptions
+     * Die class
+     * Name: Max Stone
+     * Last Updated: 9/11/2024
+     */
+    package stonemc;
+    
+    /**
+     * This class stores the sides in a die and can generate a random number to display the 
+     * result of a roll
+     */
+    public class Die {
+        private int sides;
+        private int currentValue;
+    
+        public Die(int sides) throws IllegalArgumentException{
+            this.sides = sides;
+            if(100 < sides || sides < 2) {
+                throw new IllegalArgumentException("Die was constructed with an invalid number of sides");
+            }
+        }
+    
+        /**
+         * This method returns the most recently generated result or throws an error if the 
+         * die has not been rolled yet
+         * @return the currentValue
+         */
+        public int getCurrentValue() throws DieNotRolledException{
+            if(currentValue == 0){
+                throw new DieNotRolledException();
+            }
+            int value = currentValue;
+            currentValue = 0;
+            return value;
+        }
+    
+        /**
+         * This method generates a random value to set currentValue to
+         */
+        public void roll() {
+            currentValue = (int)(Math.random() * (sides) + 1);
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>Constructor:</strong> The bounds check in the constructor correctly validates the number of sides. However, for better readability and adherence to standard conventions, the condition can be restructured.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Restructure the bounds check for clarity:</p>
+
+    <div class="code-block">
+        <pre>
+    public Die(int sides) throws IllegalArgumentException {
+        if (sides < MIN_SIDES || sides > MAX_SIDES) {
+            throw new IllegalArgumentException("Die was constructed with an invalid number of sides: " + sides);
+        }
+        this.sides = sides;
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>Method <code>roll()</code>:</strong> The use of <code>Math.random()</code> is acceptable, but using the <code>Random</code> class would be more consistent and potentially more efficient.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Utilize the <code>Random</code> class for generating random numbers:</p>
+
+    <div class="code-block">
+        <pre>
+    import java.util.Random;
+
+    public class Die {
+        private int sides;
+        private int currentValue;
+        private final Random random = new Random();
+
+        public void roll() {
+            this.currentValue = random.nextInt(sides) + 1;
+        }
+    }
+        </pre>
+    </div>
+
+    <h3>DieNotRolledException.java</h3>
+    <div class="code-block">
+        <pre>
+    /*
+     * Course: CSC1020
+     * Lab 2 - Exceptions
+     * DieNotRolledException class
+     * Name: Max Stone
+     * Last Updated: 9/11/2024
+     */
+    package stonemc;
+    
+    /**
+     * This class extends RuntimeException to throw an exception when called.
+     */
+    public class DieNotRolledException extends Exception {
+        public DieNotRolledException() {
+            super("The dice's value was retrieved before it was rolled.");
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>DieNotRolledException.java:</strong> The custom exception extends <code>Exception</code>, making it a checked exception. Since it's used to indicate a programming error (retrieving a value before rolling), it would be more appropriate to extend <code>RuntimeException</code>. Additionally, overriding the <code>getMessage()</code> method without adding any new functionality is unnecessary.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Modify the exception to extend <code>RuntimeException</code> and remove the overridden <code>getMessage()</code> method:</p>
+
+    <div class="code-block">
+        <pre>
+    /**
+     * This class extends RuntimeException to throw an exception when called.
+     */
+    public class DieNotRolledException extends RuntimeException {
+        public DieNotRolledException() {
+            super("The dice's value was retrieved before it was rolled.");
+        }
+    }
+        </pre>
+    </div>
+
+    <h3>Driver.java</h3>
+    <div class="code-block">
+        <pre>
+    /*
+     * Course: CSC1020
+     * Lab 2 - Exceptions
+     * Main Driver class
+     * Name: Max Stone
+     * Last Updated: 9/12/2024
+     */
+    package stonemc;
+    
+    import java.util.ArrayList;
+    import java.util.Scanner;
+    import java.util.regex.Matcher;
+    import java.util.regex.Pattern;
+    
+    /**
+     * This class asks the user for a variety of parameters to construct die objects then uses those 
+     * objects to determine the distribution of the results of those dice rolled a specified number
+     * of times. It finishes by reporting the results of those rolls.
+     */
+    public class Driver {
+        public static void main(String[] args) {
+            int[] userInputs;
+            Die[] dieArray;
+            int[] rollResults;
+            int maximumValue;
+    
+            System.out.println("Please enter the number of dice to roll, how many sides the dice have,"+ 
+                "\nand how many rolls to complete, separating the values by a space."+ 
+                "\nExample: \"2 6 1000\"\n");
+            
+            userInputs = getInput();
+            dieArray = createDice(userInputs[0],userInputs[1]);
+            rollResults = rollDice(dieArray, userInputs[2]);
+            maximumValue = findMax(rollResults);
+            report(maximumValue,rollResults);
+        }
+    
+        /**
+         * This method prompts the user for 3 values which it then checks and returns as an array.
+         * @return It returns the user inputs in an array
+         */
+        static int[] getInput() {
+            ArrayList<Integer> inputList = new ArrayList<Integer>();
+            Scanner in = new Scanner(System.in);
+            boolean running = true;
+            while(running) {
+                inputList.clear();
+                System.out.print("Enter configuration:");
+                String entryString = in.nextLine();
+                if(entryString.matches(".*[a-zA-Z].*")) {
+                    System.out.println("Invalid input: All values must be whole numbers.");
+                } else {
+                    Matcher matcher = Pattern.compile("\\d+").matcher(entryString);
+                    while(matcher.find()) {
+                        inputList.add(Integer.valueOf(matcher.group()));
+                    }
+                    if(2 > inputList.get(1) || inputList.get(1) > 100) {
+                        System.out.println("Bad die creation: Illegal number of sides: " + 
+                        inputList.get(1));
+                    } else {
+                        if(inputList.size() < 3) {
+                            System.out.println("Invalid input: Expected 3 whole number values but received less " + 
+                            "than 3");                    
+                        } else if(inputList.size() > 3) {
+                            System.out.println("Invalid input: Expected 3 whole number values but received " +
+                            "greater than 3");
+                        } else {
+                            running = false;
+                       }
+                    }
+                }
+                System.out.println("\n");
+            }
+            int[] inputArray = new int[3];
+            int i = 0;
+            for(int entry : inputList) {
+                inputArray[i] = entry;
+                i++;
+            }
+            in.close();
+            return inputArray;
+            }
+    
+    
+        /**
+         * This method creates an array of dice based on the user's parameters
+         * @param number is the number of dice created
+         * @param sides is the number of sides each die has
+         * @return this returns the dieArray
+         */
+        static Die[] createDice(int number, int sides) {
+            Die[] dieArray = new Die[number];
+            for(int i = 0; i < number; i++) {
+                dieArray[i] = new Die(sides);
+            }
+            return dieArray;
+        }
+    
+        /**
+         * This method rolls the dice the number of times that the user specified
+         * @param dice is the array of dice to be rolled
+         * @param numberOfRolls is the number of times each die is rolled
+         * @return this method returns an array of results of the dice
+         */
+        static int[] rollDice(Die[] dice, int numberOfRolls) {
+            int[] results = new int[numberOfRolls];
+            for(int i = 0; i < results.length; i++) {
+                for (int j = 0; j < dice.length; j++) {
+                    dice[j].roll();
+                    try {
+                        results[i] += dice[j].getCurrentValue();
+                    } catch(DieNotRolledException e) {
+                        System.out.println("Die Not Rolled exception");
+                    }
+                }
+            }
+            return results;
+        }
+    
+        /**
+         * This formats then displays the frequencies of each rolled result
+         * @param maximumValue is the maximum value rolled throughout the trial
+         * @param rollResults is array of results from the trial
+         */
+        static void report(int maximumValue, int[] rollResults) {
+            int[] frequencies = findRollFrequency(rollResults);
+            String lengthMax = ""+ (int)maximumValue/10;
+            String lengthStar = ""+ (int)findMax(frequencies)/10;
+            int scale = findMax(frequencies)/10;
+            for(int i = 0; i < frequencies.length; i++) {
+                if(frequencies[i] > 0) {
+                    System.out.printf("%-" + (lengthMax.length() + 3) + "s", (i+1)+ ":");
+                    System.out.printf("%-" + (lengthStar.length() + 3) + "s",frequencies[i]);
+                    for(int j = 0; j < frequencies[i]/scale; j++) {
+                        System.out.print("*");
+                    }
+                    System.out.println("");
+                }
+            }
+        }
+    
+        /**
+         * This method finds the frequency which a specific result occured
+         * @param rollResults this is the array of rolls that resulted
+         * @return the array of frequencies that rolls occured
+         */
+        static int[] findRollFrequency(int[] rollResults) {
+            int[] frequencies = new int[findMax(rollResults)];
+            for(int i : rollResults) {
+                frequencies[i-1]++;
+            }
+            return frequencies;
+        }
+        
+        /**
+         * This method finds the maximum within the array of results
+         * @param results is the array that is searched
+         * @return the integer value of the maximum result
+         */
+        static int findMax(int[] results) {
+            int maximum = 0;
+            for(int i : results){
+                if(maximum < i){
+                    maximum = i;
+                }
+            }
+            return maximum;
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-1):</strong></span> <strong>Method <code>getInput()</code>:</strong> The method creates a new <code>Scanner</code> instance inside the method while a <code>Scanner</code> is already open in <code>main()</code>. This can lead to resource leaks as multiple <code>Scanner</code> instances remain open.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Remove the additional <code>Scanner</code> instantiation inside <code>getInput()</code> and use the existing <code>Scanner</code> from <code>main()</code>. Alternatively, pass the <code>Scanner</code> as a parameter to the method:</p>
+
+    <div class="code-block">
+        <pre>
+    private static int[] getInput(Scanner scanner){
+        while (true){
+            try{
+                System.out.println("Please enter the number of dice to roll, "
+                        + "how many sides the dice have,");
+                System.out.println("and how many rolls to complete, separating the values by a space.");
+                System.out.println("Example: \"2 6 1000\"");
+                System.out.println();
+                System.out.print("Enter configuration: ");
+                String[] input = scanner.nextLine().trim().split(" ");
+                if(input.length != 3){
+                    throw new IllegalArgumentException("Expected 3 inputs, only received "
+                            + input.length);
+                }
+                int numDice = Integer.parseInt(input[0]);
+                int numSides = Integer.parseInt(input[1]);
+                int numRolls = Integer.parseInt(input[2]);
+
+                if(numDice < MIN_DICE || numDice > MAX_DICE){
+                    throw new IllegalArgumentException("Wrong number of dice: " + numDice);
+                }
+                return new int[] {numDice, numSides, numRolls};
+            } catch(NumberFormatException e) {
+                System.out.println("All inputs must be whole numbers");
+            }
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>Method <code>rollDice()</code>:</strong> The loop condition may cause an <code>ArrayIndexOutOfBoundsException</code> if the calculated index exceeds the array bounds. It should include a check to ensure that <code>total - dice.length</code> is within the valid range of the array.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Modify the loop condition to prevent accessing out-of-bound indices by adding a boundary check:</p>
+
+    <div class="code-block">
+        <pre>
+    static int[] rollDice(Die[] dice, int numberOfRolls) {
+        int[] results = new int[numberOfRolls];
+        for(int i = 0; i < results.length; i++) {
+            for (int j = 0; j < dice.length; j++) {
+                dice[j].roll();
+                try {
+                    int value = dice[j].getCurrentValue();
+                    results[i] += value;
+                } catch(DieNotRolledException e) {
+                    System.out.println("Die Not Rolled exception");
+                }
+            }
+        }
+        return results;
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>Method <code>report()</code>:</strong> The calculation for <code>scale</code> does not account for cases where <code>scale</code> is 0, which can lead to division by zero errors. Additionally, the use of a <code>for-each</code> loop incorrectly assigns the roll count to the roll value in the output.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Ensure that <code>scale</code> is not zero and use a traditional <code>for</code> loop to correctly associate roll values with their counts:</p>
+
+    <div class="code-block">
+        <pre>
+    static void report(int maximumValue, int[] rollResults) {
+        int[] frequencies = findRollFrequency(rollResults);
+        int scale = findMax(frequencies) / PERCENTAGE;
+        if(scale == 0){
+            scale = 1; // Prevent division by zero
+        }
+        for(int i = 0; i < frequencies.length; i++) {
+            if(frequencies[i] > 0) {
+                int numStars = frequencies[i] / scale;
+                System.out.printf("%-2d:%-6d   %s%n", i + 1, frequencies[i], "*".repeat(Math.max(0, numStars)));
+            }
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="deduction"><strong>Deduction (-0.5):</strong></span> <strong>Exception Handling in <code>main()</code>:</strong> The exception handling is minimal and does not account for potential exceptions like <code>DieNotRolledException</code> during the rolling process. Additionally, catching <code>ArrayIndexOutOfBoundsException</code> for input validation is not ideal as it can obscure the actual issue.</p>
+
+    <p><span class="suggestion"><strong>Suggestion for Improvement:</strong></span> Implement comprehensive exception handling to manage unexpected scenarios gracefully. For example, catch specific exceptions and provide meaningful feedback to the user:</p>
+
+    <div class="code-block">
+        <pre>
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        try {
+            int[] userInputs = getInput(scanner);
+            Die[] dieArray = createDice(userInputs[0], userInputs[1]);
+            int[] rollResults = rollDice(dieArray, userInputs[2]);
+            int maximumValue = findMax(rollResults);
+            report(maximumValue, rollResults);
+        } catch (DieNotRolledException e) {
+            System.err.println(e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid input: All values must be whole numbers.");
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
+    }
+        </pre>
+    </div>
+
+    <p><span class="commendation"><strong>Commendation:</strong></span> Good implementation of helper methods like <code>createDice()</code>, <code>rollDice()</code>, and <code>report()</code>. This modular approach enhances readability and maintainability of your code.</p>
+
+    <h2>Final Grade</h2>
+    <p class="grade"><strong>Earned:</strong> 96/100</p>
+    <ul>
+        <li>Intermediate Commits: 15/15</li>
+        <li>Technical Quality: 56/60 (Deductions for exception handling and input validation issues)</li>
+        <li>Coding Standard Compliance and Program Clarity: 15/15</li>
+        <li>Following Submission Instructions: 10/10</li>
+    </ul>
+
+    <p><strong>Overall, you've made a solid effort!</strong> Keep up the good work, and consider the suggestions above to further improve your coding skills.</p>
+
+    <p>If you have any questions about this feedback or need further clarification, please feel free to reach out.</p>
+
+    <p><em>Grader: Dr. Ukegbu</em></p>
+</body>
+</html>
